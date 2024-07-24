@@ -26,5 +26,12 @@
          (recur (inc i) (conj new-snake (get snake (dec i)))))
        (vec new-snake)))))
 
+(defn collision? [state]
+  (let [head (move-head (:direction state) (first (:snake state)))
+        collide-wall? (or (< (:x head) 0) (>= (:x head) (:width state))
+                     (< (:y head) 0) (>= (:y head) (:height state)))
+        collide-self? (some #(= head %) (rest (:snake state)))]
+    (boolean (or collide-wall? collide-self?))))
+
 (defn -main []
   (println "Hello Clojure!"))
