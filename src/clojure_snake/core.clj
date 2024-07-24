@@ -33,5 +33,10 @@
         collide-self? (some #(= head %) (rest (:snake state)))]
     (boolean (or collide-wall? collide-self?))))
 
+(defn update-state [state]
+  (if (collision? state)
+    initial-state
+    (move-snake state)))
+
 (defn -main []
   (println "Hello Clojure!"))

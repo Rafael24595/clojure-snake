@@ -84,3 +84,15 @@
   (testing "Snake Y wall collision"
     (let [has-collide? (collision? test-state-collide-wall-y)]
       (is (true? has-collide?)))))
+
+(deftest test-update-state-non-collide
+  (testing "Update state non collide"
+    (let [update (update-state test-state-non-collide)
+          snake (:snake update)]
+      (is (= 5 (:x (get snake 0)))) (is (= 6 (:y (get snake 0)))))))
+
+(deftest test-update-state-collide-self
+  (testing "Update state collide self"
+    (let [update (update-state test-state-collide-self)
+          snake (:snake update)]
+      (is (= 5 (:x (get snake 0)))) (is (= 5 (:y (get snake 0)))))))
