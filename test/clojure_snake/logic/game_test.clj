@@ -19,7 +19,7 @@
 (def test-state-non-collide-2
   {:snake snake-len-5
    :direction {:x 0 :y 0}
-   :food {:x 10 :y 10}
+   :food {:x 5 :y 5}
    :width 20
    :height 20
    :score 0})
@@ -135,3 +135,13 @@
   (testing "Valide possible turn"
     (let [result (is-possible-turn? 1 -1)]
       (is (false? result)))))
+
+(deftest test-food-non-collision
+  (testing "Snake food non collision"
+    (let [has-collide? (food-colide? test-state-non-collide)]
+      (is (false? has-collide?)))))
+
+(deftest test-food-collision
+  (testing "Snake food non collision"
+    (let [has-collide? (food-colide? test-state-non-collide-2)]
+      (is (true? has-collide?)))))

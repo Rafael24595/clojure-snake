@@ -8,7 +8,7 @@
    :height 20
    :score 0})
 
-(defn new-fruit [state]
+(defn ^:private new-fruit [state]
   (if (>= (count (:snake state)) (* (:width state (:height state))))
     (); TODO: Manage condition
     (let [new-fruit {:x (Math/round (rand (:width state)))
@@ -18,7 +18,7 @@
         (assoc state :food new-fruit))
       )))
 
-(defn make-positions [direction tail]
+(defn ^:private make-positions [direction tail]
   (let [x (:x tail)
         y (:y tail)]
      (cond
@@ -27,7 +27,7 @@
        (= (:y direction) 1) [{:x x :y (- y 1)} {:x x :y (+ y 1)} {:x (- x 1) :y y} {:x (+ x 1) :y y}]
        :else [{:x x :y (+ y 1)} {:x x :y (- y 1)} {:x (+ x 1) :y y} {:x (- x 1) :y y}])))
 
-(defn find-valid-tail [state]
+(defn ^:private find-valid-tail [state]
   (let [posibilities (make-positions (:direction state) (last (:snake state)))]
     (loop [i 0]
       (if (< i (count posibilities))
@@ -44,6 +44,9 @@
       (if (nil? tail)
         (); TODO: Manage condition
         (assoc state :snake (conj (:snake state) tail))))))
+
+(defn eat-fruit [state]
+  (new-fruit (grow state)))
 
 (defn new-game []
   (new-fruit initial-state))
