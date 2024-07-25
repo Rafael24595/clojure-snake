@@ -16,6 +16,14 @@
    :height 20
    :score 0})
 
+(def test-state-non-collide-2
+  {:snake snake-len-5
+   :direction {:x 0 :y 0}
+   :food {:x 10 :y 10}
+   :width 20
+   :height 20
+   :score 0})
+
 (def test-state-collide-self
   {:snake snake-len-5
    :direction {:x 0 :y -1}
@@ -65,9 +73,20 @@
       (is (= 5 (:x (get update 1)))) (is (= 5 (:y (get update 1))))
       (is (= 5 (:x (get update 2)))) (is (= 6 (:y (get update 2)))))))
 
+(deftest test-move-5
+  (testing "Snake with len 2 move"
+    (let [update (move-snake {:x 0 :y 0} snake-len-2)]
+      (is (= 5 (:x (get update 0)))) (is (= 5 (:y (get update 0))))
+      (is (= 5 (:x (get update 1)))) (is (= 6 (:y (get update 1)))))))
+
 (deftest test-non-collision
   (testing "Snake non collision"
     (let [has-collide? (collision? test-state-non-collide)]
+      (is (false? has-collide?)))))
+
+(deftest test-non-collision-2
+  (testing "Snake non collision"
+    (let [has-collide? (collision? test-state-non-collide-2)]
       (is (false? has-collide?)))))
 
 (deftest test-collision-self

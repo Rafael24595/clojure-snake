@@ -1,5 +1,5 @@
 (ns clojure-snake.logic.game 
-  (:require [clojure-snake.logic.entities :refer [initial-state]]))
+  (:require [clojure-snake.logic.entities :refer [new-game]]))
 
 (defn move-head [direction, head]
   {:x (+ (:x head) (:x direction))
@@ -11,13 +11,15 @@
          snake (:snake state)]
      (assoc state :snake (move-snake direction snake))))
   ([direction, snake]
-   (loop [i 0
-          new-snake []]
-     (if (< i (count snake))
-       (if (= i 0)
-         (recur (inc i) (conj new-snake (move-head direction, (get snake i))))
-         (recur (inc i) (conj new-snake (get snake (dec i)))))
-       (vec new-snake)))))
+   (if (and (= (:x direction) 0) (= (:y direction) 0))
+     snake
+     (loop [i 0
+            new-snake []]
+       (if (< i (count snake))
+         (if (= i 0)
+           (recur (inc i) (conj new-snake (move-head direction, (get snake i))))
+           (recur (inc i) (conj new-snake (get snake (dec i)))))
+         (vec new-snake))))))
 
 (defn collision? [state]
   (let [head (move-head (:direction state) (first (:snake state)))
@@ -28,7 +30,7 @@
 
 (defn update-state [state]
   (if (collision? state)
-    initial-state
+    (new-game)
     (move-snake state)))
 
 (defn is-possible-turn? [a b]

@@ -1,5 +1,5 @@
 (ns clojure-snake.io 
-  (:require [clojure-snake.logic.entities :refer [initial-state]]
+  (:require [clojure-snake.logic.entities :refer [new-game]]
             [clojure-snake.logic.game :refer [is-possible-turn? update-state]]
             [quil.core :as q]
             [quil.middleware :as m]))
@@ -40,20 +40,20 @@
       (assoc state :direction new-direction)
       (assoc state :direction old-direction))))
 
-(defn ^:private setup []
+(defn ^:private setup [state]
   (q/frame-rate 10)
-  initial-state)
+  state)
 
 (def ^:private sketch-name 'clojure-snake)
 
 (defn run []
-  (q/defsketch sketch-name
-    :title "Snake Game"
-    :size [
-           (* (:width initial-state) mult) 
-           (* (:height initial-state) mult)]
-    :setup setup
-    :draw draw
-    :update update-state
-    :key-pressed key-pressed
-    :middleware [m/fun-mode]))
+  (let [state (new-game)]
+    (q/defsketch sketch-name
+      :title "Snake Game"
+      :size [(* (:width state) mult)
+             (* (:height state) mult)]
+      :setup #(setup state)
+      :draw draw
+      :update update-state
+      :key-pressed key-pressed
+      :middleware [m/fun-mode])))
