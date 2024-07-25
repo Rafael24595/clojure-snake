@@ -1,6 +1,6 @@
-(ns clojure-snake.core-test
+(ns clojure-snake.logic.game-test
   (:require [clojure.test :refer :all]
-            [clojure-snake.core :refer :all]))
+            [clojure-snake.logic.game :refer :all]))
 
 (def snake-len-1 [{:x 5 :y 5}])
 (def snake-len-2 [{:x 5 :y 5} {:x 5 :y 6}])
@@ -96,3 +96,23 @@
     (let [update (update-state test-state-collide-self)
           snake (:snake update)]
       (is (= 5 (:x (get snake 0)))) (is (= 5 (:y (get snake 0)))))))
+
+(deftest test-is-possible-turn-1
+  (testing "Valide possible turn"
+    (let [result (is-possible-turn? 1 0)]
+      (is (true? result)))))
+
+(deftest test-is-possible-turn-2
+  (testing "Valide possible turn"
+    (let [result (is-possible-turn? 0 0)]
+      (is (true? result)))))
+
+(deftest test-is-possible-turn-3
+  (testing "Valide possible turn"
+    (let [result (is-possible-turn? -1 0)]
+      (is (true? result)))))
+
+(deftest test-is-impossible-turn
+  (testing "Valide possible turn"
+    (let [result (is-possible-turn? 1 -1)]
+      (is (false? result)))))
