@@ -6,6 +6,8 @@
    :food {:x 0 :y 0}
    :width 20
    :height 20
+   ;time 0
+   ;status "STARTED"
    :score 0})
 
 (defn ^:private new-fruit [state]
@@ -37,7 +39,7 @@
             position))
         nil))))
 
-(defn grow [state]
+(defn ^:private grow [state]
   (if (>= (count (:snake state)) (* (:width state (:height state))))
     (); TODO: Manage condition
     (let [tail (find-valid-tail state)] 
@@ -45,8 +47,12 @@
         (); TODO: Manage condition
         (assoc state :snake (conj (:snake state) tail))))))
 
+(defn ^:private increment-score [state]
+  (let [score (:score state)]
+    (assoc state :score (+ score 100))))
+
 (defn eat-fruit [state]
-  (new-fruit (grow state)))
+  (new-fruit (increment-score (grow state))))
 
 (defn new-game []
   (new-fruit initial-state))

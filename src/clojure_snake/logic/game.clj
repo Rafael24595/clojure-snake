@@ -1,7 +1,7 @@
 (ns clojure-snake.logic.game 
   (:require [clojure-snake.logic.entities :refer [eat-fruit new-game]]))
 
-(defn move-head [direction, head]
+(defn ^:private move-head [direction, head]
   {:x (+ (:x head) (:x direction))
    :y (+ (:y head) (:y direction))})
 

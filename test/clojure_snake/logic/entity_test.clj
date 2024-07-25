@@ -28,15 +28,21 @@
 
 (deftest test-grow-conflict-1
   (testing "Valide grow conflict"
-    (let [snake (:snake (grow test-state-grow-conflict-1))]
+    (let [snake (:snake (eat-fruit test-state-grow-conflict-1))]
       (is (= 6 (:x (last snake)))) (is (= 4 (:y (last snake)))))))
 
 (deftest test-grow-conflict-2
   (testing "Valide grow conflict"
-    (let [snake (:snake (grow test-state-grow-conflict-2))]
+    (let [snake (:snake (eat-fruit test-state-grow-conflict-2))]
       (is (= 5 (:x (last snake)))) (is (= 3 (:y (last snake)))))))
 
 (deftest test-grow-conflict-3
   (testing "Valide grow conflict"
-    (let [snake (:snake (grow test-state-grow-conflict-3))]
+    (let [snake (:snake (eat-fruit test-state-grow-conflict-3))]
       (is (= 5 (:x (last snake)))) (is (= 3 (:y (last snake)))))))
+
+(deftest test-increment-score
+  (testing "Valid increment score"
+    (let [final-state (reduce (fn [state _] (eat-fruit state )) test-state-grow-conflict-3 (range 3))
+          score (:score final-state)]
+      (is (= 300 score)))))
