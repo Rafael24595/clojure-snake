@@ -4,16 +4,27 @@
             [quil.core :as q]
             [quil.middleware :as m]))
 
-(defn draw [state]
-  (q/background 255)
+(def ^:private mult 20)
+
+(defn ^:private draw-background []
+  (q/background 255))
+
+(defn ^:private draw-snake [state]
   (q/fill 0)
   (doseq [{:keys [x y]} (:snake state)]
-    (q/rect (* x 20) (* y 20) 20 20))
+    (q/rect (* x mult) (* y mult) mult mult)))
+
+(defn ^:private draw-fruit [state]
   (q/fill 255 0 0)
   (let [{:keys [x y]} (:food state)]
-    (q/rect (* x 20) (* y 20) 20 20)))
+    (q/rect (* x mult) (* y mult) mult mult)))
 
-(defn key-pressed [state key]
+(defn ^:private draw [state]
+  (draw-background)
+  (draw-snake state)
+  (draw-fruit state))
+
+(defn ^:private key-pressed [state key]
   (let [old-direction (:direction state)
         new-direction (case (get key :key)
                         :left {:x -1 :y 0}
@@ -29,16 +40,18 @@
       (assoc state :direction new-direction)
       (assoc state :direction old-direction))))
 
-(defn setup []
+(defn ^:private setup []
   (q/frame-rate 10)
   initial-state)
 
-(def sketch-name 'clojure-snake)
+(def ^:private sketch-name 'clojure-snake)
 
 (defn run []
   (q/defsketch sketch-name
     :title "Snake Game"
-    :size [400 400]
+    :size [
+           (* (:width initial-state) mult) 
+           (* (:height initial-state) mult)]
     :setup setup
     :draw draw
     :update update-state
