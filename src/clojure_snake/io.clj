@@ -30,9 +30,17 @@
   (q/stroke 20 55 0)
   (q/stroke-weight 1)
   (draw-snake-head state)
-  (q/fill 20 220 0)
-  (doseq [{:keys [x y]} (rest (:snake state))]
-    (q/rect (* x mult) (* y mult) mult mult))
+  (let [fragments (rest (:snake state))]
+    (loop [i 0 remaining-fragments fragments]
+      (when (seq remaining-fragments)
+        (let [fragment (first remaining-fragments)
+              x (:x fragment)
+              y (:y fragment)] 
+          (if (even? i) 
+            (q/fill 20 220 0)
+            (q/fill 20 205 0)) 
+          (q/rect (* x mult) (* y mult) mult mult) 
+          (recur (inc i) (rest remaining-fragments))))))
   (q/stroke 0)
   (q/stroke-weight 1))
 
