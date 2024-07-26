@@ -7,22 +7,54 @@
 (def ^:private mult 20)
 
 (defn ^:private draw-background []
-  (q/background 255))
+  (q/background 250 240 215)
+  
+ (let [box-height (* mult 2)
+       box-width (q/width)
+       y-pos (- (q/height) box-height 0)] 
+   (q/stroke 45)
+   (q/stroke-weight 2)
+ 
+   (q/fill 50, 75, 255)
+   (q/rect 0 y-pos box-width box-height)
+
+   (q/stroke 0) 
+   (q/stroke-weight 1)))
+
+(defn ^:private draw-snake-head [state]
+  (q/fill 20 155 0)
+  (let [{:keys [x y]} (first (:snake state))]
+    (q/rect (* x mult) (* y mult) mult mult)))
 
 (defn ^:private draw-snake [state]
-  (q/fill 0)
-  (doseq [{:keys [x y]} (:snake state)]
-    (q/rect (* x mult) (* y mult) mult mult)))
+  (q/stroke 20 55 0)
+  (q/stroke-weight 1)
+  (draw-snake-head state)
+  (q/fill 20 220 0)
+  (doseq [{:keys [x y]} (rest (:snake state))]
+    (q/rect (* x mult) (* y mult) mult mult))
+  (q/stroke 0)
+  (q/stroke-weight 1))
 
 (defn ^:private draw-fruit [state]
+  (q/stroke 55 20 0)
+  (q/stroke-weight 1)
   (q/fill 255 0 0)
   (let [{:keys [x y]} (:food state)]
-    (q/rect (* x mult) (* y mult) mult mult)))
+    (q/rect (* x mult) (* y mult) mult mult))
+  (q/stroke 0)
+  (q/stroke-weight 1))
+
+(defn ^:private draw-score [state] 
+  (q/text-size 16)
+  (q/fill 225)
+  (q/text (str "Score: " (:score state)) 10 425))
 
 (defn ^:private draw [state]
   (draw-background)
   (draw-snake state)
-  (draw-fruit state))
+  (draw-fruit state)
+  (draw-score state))
 
 (defn ^:private key-pressed [state key]
   (let [old-direction (:direction state)
@@ -51,7 +83,7 @@
     (q/defsketch sketch-name
       :title "Snake Game"
       :size [(* (:width state) mult)
-             (* (:height state) mult)]
+             (+ (* (:height state) mult) (* mult 2))]
       :setup #(setup state)
       :draw draw
       :update update-state
