@@ -13,8 +13,8 @@
 (defn ^:private new-fruit [state]
   (if (>= (count (:snake state)) (* (:width state (:height state))))
     (); TODO: Manage condition
-    (let [new-fruit {:x (Math/round (rand (:width state)))
-                     :y (Math/round (rand (:height state)))}]
+    (let [new-fruit {:x (Math/round (rand (- (:width state) 1)))
+                     :y (Math/round (rand (- (:height state) 1)))}]
       (if (some #(= new-fruit %) (rest (:snake state)))
         (recur state)
         (assoc state :food new-fruit))
