@@ -144,14 +144,13 @@
 
 (def ^:private sketch-name 'clojure-snake)
 
-(defn run []
-  (let [state (new-game)]
-    (q/defsketch sketch-name
-      :title "Snake Game"
-      :size [(* (:width state) mult)
-             (+ (* (:height state) mult) (* mult 2))]
-      :setup #(setup state)
-      :draw draw
-      :update update-state
-      :key-pressed key-pressed
-      :middleware [m/fun-mode])))
+(defn run [state]
+  (q/defsketch sketch-name
+    :title "Clojure Snake"
+    :size [(* (:width state) mult)
+           (+ (* (:height state) mult) (* mult 2))]
+    :setup #(setup state)
+    :draw draw
+    :update update-state
+    :key-pressed key-pressed
+    :middleware [m/fun-mode]))
