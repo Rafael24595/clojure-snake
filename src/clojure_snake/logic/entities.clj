@@ -1,18 +1,27 @@
 (ns clojure-snake.logic.entities)
 
 (def ^:private initial-state
-  {:snake [{:x 5 :y 5} {:x 4 :y 5} {:x 3 :y 5} {:x 3 :y 4} {:x 3 :y 3} {:x 3 :y 2} {:x 3 :y 1} {:x 4 :y 1} {:x 5 :y 1} {:x 6 :y 1} {:x 7 :y 1} {:x 8 :y 1} {:x 9 :y 1} {:x 10 :y 1} {:x 11 :y 1} {:x 12 :y 1} {:x 13 :y 1} {:x 14 :y 1}]
-   :direction {:x 0 :y 0}
+  {:snake [{:x 10 :y 0}]
+   :direction {:x 0 :y 1}
    :food {:x 0 :y 0}
-   :width 20
-   :height 20
+   :width 21
+   :height 21
    ;time 0
-   ;status "STARTED"
+   :status "NEW_GAME"
    :score 0})
+
+(defn win-game [state]
+  (assoc state :status "WIN_GAME"))
+
+(defn game-over [state]
+  (assoc state :status "GAME_OVER"))
+
+(defn launch-game [state]
+  (assoc state :status "RUNNING"))
 
 (defn ^:private new-fruit [state]
   (if (>= (count (:snake state)) (* (:width state) (:height state)))
-    (println "new-fruit error" (str (count (:snake state))) " - " (str (* (:width state) (:height state)))); TODO: Manage condition
+    (win-game state)
     (let [new-fruit {:x (Math/round (inc (rand (- (:width state) 2))))
                      :y (Math/round (inc (rand (- (:height state) 2))))}]
       (if (some #(= new-fruit %) (rest (:snake state)))
@@ -41,10 +50,10 @@
 
 (defn ^:private grow [state]
   (if (>= (count (:snake state)) (* (:width state) (:height state)))
-    (println "grow error"); TODO: Manage condition
+    (win-game state)
     (let [tail (find-valid-tail state)] 
       (if (nil? tail)
-        (println "nil tail error"); TODO: Manage condition
+        (game-over state); TODO: Manage condition
         (assoc state :snake (conj (:snake state) tail))))))
 
 (defn ^:private increment-score [state]

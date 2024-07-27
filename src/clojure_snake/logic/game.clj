@@ -1,5 +1,5 @@
 (ns clojure-snake.logic.game 
-  (:require [clojure-snake.logic.entities :refer [eat-fruit new-game]]))
+  (:require [clojure-snake.logic.entities :refer [eat-fruit game-over]]))
 
 (defn ^:private move-head [direction, head]
   {:x (+ (:x head) (:x direction))
@@ -34,12 +34,14 @@
     (and (= (:x food) (:x head)) (= (:y food) (:y head)))))
 
 (defn update-state [state]
-  (if (collision? state)
-    (new-game)
-    (let [update (move-snake state)]
-      (if (food-colide? state) 
-        (eat-fruit update)
-        update))))
+  (if (= (:status state) "RUNNING")
+    (if (collision? state)
+      (game-over state)
+      (let [update (move-snake state)]
+        (if (food-colide? state)
+          (eat-fruit update)
+          update)))
+    state))
 
 (defn is-possible-turn? [a b]
   (not (and (not= a 0) (not= b 0) (= (+ a b) 0))))

@@ -1,5 +1,5 @@
 (ns clojure-snake.io 
-  (:require [clojure-snake.logic.entities :refer [new-game]]
+  (:require [clojure-snake.logic.entities :refer [launch-game new-game]]
             [clojure-snake.logic.game :refer [is-possible-turn? update-state]]
             [quil.core :as q]
             [quil.middleware :as m]))
@@ -20,6 +20,23 @@
 
    (q/stroke 0) 
    (q/stroke-weight 1)))
+
+(defn draw-box-with-message [state, message]
+  (let [screen-width (q/width)
+        screen-height (q/height)
+        box-width 200
+        box-height 100
+        box-x (/ (- screen-width box-width) 2)
+        box-y (/ (- screen-height (+ box-height (* mult 2))) 2)] 
+    
+    (q/fill 50, 75, 255)
+    (q/rect box-x box-y box-width box-height) 
+
+    (q/fill 225)
+    (q/text-align :center :center)
+    (q/text message (+ box-x (/ box-width 2)) (+ box-y (/ box-height 2)))
+    (q/text-align :left))
+  state)
 
 (defn ^:private draw-snake-head [state]
   (q/fill 20 155 0)
@@ -56,15 +73,38 @@
 (defn ^:private draw-score [state] 
   (q/text-size 16)
   (q/fill 225)
-  (q/text (str "Score: " (:score state)) 10 425))
+  (q/text-align :left :center)
+  (q/text (str "Score: " (:score state)) (/ mult 2) (- (q/height) mult))
+  (q/text-align :left))
 
-(defn ^:private draw [state]
-  (draw-background)
+(defn draw-game-new [state]
+  (draw-box-with-message state "NEW GAME")
+  (draw-score state))
+
+(defn draw-game-run [state]
   (draw-snake state)
   (draw-fruit state)
   (draw-score state))
 
-(defn ^:private key-pressed [state key]
+(defn draw-game-over [state]
+  (draw-box-with-message state "GAME OVER")
+  (draw-score state))
+
+(defn draw-game-win [state]
+  (draw-box-with-message state "GAME WIN!")
+  (draw-score state))
+
+(defn ^:private draw [state]
+  (draw-background)
+  (let [status (:status state)] 
+    (cond 
+      (= status "NEW_GAME") (draw-game-new state)
+      (= status "RUNNING") (draw-game-run state)
+      (= status "GAME_OVER") (draw-game-over state)
+      (= status "WIN_GAME") (draw-game-win state)
+      :else state)))
+
+(defn ^:private key-pressed-running [state key]
   (let [old-direction (:direction state)
         new-direction (case (get key :key)
                         :left {:x -1 :y 0}
@@ -79,6 +119,15 @@
      (if (and (is-possible-turn? ox nx) (is-possible-turn? oy ny))
       (assoc state :direction new-direction)
       (assoc state :direction old-direction))))
+
+(defn ^:private key-pressed [state key] 
+  (let [status (:status state)] 
+    (cond
+      (= status "NEW_GAME") (launch-game state)
+      (= status "RUNNING") (key-pressed-running state key)
+      (= status "GAME_OVER") (launch-game (new-game))
+      (= status "WIN_GAME") (launch-game (new-game))
+      :else state)))
 
 (defn ^:private setup [state]
   (q/frame-rate 10)
