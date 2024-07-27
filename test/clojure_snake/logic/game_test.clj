@@ -1,6 +1,6 @@
-(ns clojure-snake.core-test
+(ns clojure-snake.logic.game-test
   (:require [clojure.test :refer :all]
-            [clojure-snake.core :refer :all]))
+            [clojure-snake.logic.game :refer :all]))
 
 (def snake-len-1 [{:x 5 :y 5}])
 (def snake-len-2 [{:x 5 :y 5} {:x 5 :y 6}])
@@ -12,6 +12,14 @@
   {:snake snake-len-5
    :direction {:x 0 :y 1}
    :food {:x 10 :y 10}
+   :width 20
+   :height 20
+   :score 0})
+
+(def test-state-non-collide-2
+  {:snake snake-len-5
+   :direction {:x 0 :y 0}
+   :food {:x 5 :y 5}
    :width 20
    :height 20
    :score 0})
@@ -65,9 +73,20 @@
       (is (= 5 (:x (get update 1)))) (is (= 5 (:y (get update 1))))
       (is (= 5 (:x (get update 2)))) (is (= 6 (:y (get update 2)))))))
 
+(deftest test-move-5
+  (testing "Snake with len 2 move"
+    (let [update (move-snake {:x 0 :y 0} snake-len-2)]
+      (is (= 5 (:x (get update 0)))) (is (= 5 (:y (get update 0))))
+      (is (= 5 (:x (get update 1)))) (is (= 6 (:y (get update 1)))))))
+
 (deftest test-non-collision
   (testing "Snake non collision"
     (let [has-collide? (collision? test-state-non-collide)]
+      (is (false? has-collide?)))))
+
+(deftest test-non-collision-2
+  (testing "Snake non collision"
+    (let [has-collide? (collision? test-state-non-collide-2)]
       (is (false? has-collide?)))))
 
 (deftest test-collision-self
@@ -83,4 +102,46 @@
 (deftest test-collision-wall-y
   (testing "Snake Y wall collision"
     (let [has-collide? (collision? test-state-collide-wall-y)]
+      (is (true? has-collide?)))))
+
+(deftest test-update-state-non-collide
+  (testing "Update state non collide"
+    (let [update (update-state test-state-non-collide)
+          snake (:snake update)]
+      (is (= 5 (:x (get snake 0)))) (is (= 5 (:y (get snake 0)))))))
+
+(deftest test-update-state-collide-self
+  (testing "Update state collide self"
+    (let [update (update-state test-state-collide-self)
+          snake (:snake update)]
+      (is (= 5 (:x (get snake 0)))) (is (= 5 (:y (get snake 0)))))))
+
+(deftest test-is-possible-turn-1
+  (testing "Valide possible turn"
+    (let [result (is-possible-turn? 1 0)]
+      (is (true? result)))))
+
+(deftest test-is-possible-turn-2
+  (testing "Valide possible turn"
+    (let [result (is-possible-turn? 0 0)]
+      (is (true? result)))))
+
+(deftest test-is-possible-turn-3
+  (testing "Valide possible turn"
+    (let [result (is-possible-turn? -1 0)]
+      (is (true? result)))))
+
+(deftest test-is-impossible-turn
+  (testing "Valide possible turn"
+    (let [result (is-possible-turn? 1 -1)]
+      (is (false? result)))))
+
+(deftest test-food-non-collision
+  (testing "Snake food non collision"
+    (let [has-collide? (food-colide? test-state-non-collide)]
+      (is (false? has-collide?)))))
+
+(deftest test-food-collision
+  (testing "Snake food non collision"
+    (let [has-collide? (food-colide? test-state-non-collide-2)]
       (is (true? has-collide?)))))
