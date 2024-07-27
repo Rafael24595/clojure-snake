@@ -1,5 +1,5 @@
 (ns clojure-snake.logic.game 
-  (:require [clojure-snake.logic.entities :refer [eat-fruit game-over]]))
+  (:require [clojure-snake.logic.entities :refer [eat-food game-over]]))
 
 (defn ^:private move-head [direction, head]
   {:x (+ (:x head) (:x direction))
@@ -39,7 +39,7 @@
       (game-over state)
       (let [update (move-snake state)]
         (if (food-colide? state)
-          (eat-fruit update)
+          (eat-food update)
           update)))
     state))
 

@@ -19,14 +19,14 @@
 (defn launch-game [state]
   (assoc state :status "RUNNING"))
 
-(defn ^:private new-fruit [state]
+(defn ^:private new-food [state]
   (if (>= (count (:snake state)) (* (:width state) (:height state)))
     (win-game state)
-    (let [new-fruit {:x (Math/round (inc (rand (- (:width state) 2))))
+    (let [new-food {:x (Math/round (inc (rand (- (:width state) 2))))
                      :y (Math/round (inc (rand (- (:height state) 2))))}]
-      (if (some #(= new-fruit %) (rest (:snake state)))
+      (if (some #(= new-food %) (rest (:snake state)))
         (recur state)
-        (assoc state :food new-fruit))
+        (assoc state :food new-food))
       )))
 
 (defn ^:private make-positions [direction tail]
@@ -60,8 +60,8 @@
   (let [score (:score state)]
     (assoc state :score (+ score 100))))
 
-(defn eat-fruit [state]
-  (new-fruit (increment-score (grow state))))
+(defn eat-food [state]
+  (new-food (increment-score (grow state))))
 
 (defn new-game []
-  (new-fruit initial-state))
+  (new-food initial-state))
