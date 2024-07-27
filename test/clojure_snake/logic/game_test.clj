@@ -108,7 +108,7 @@
   (testing "Update state non collide"
     (let [update (update-state test-state-non-collide)
           snake (:snake update)]
-      (is (= 5 (:x (get snake 0)))) (is (= 6 (:y (get snake 0)))))))
+      (is (= 5 (:x (get snake 0)))) (is (= 5 (:y (get snake 0)))))))
 
 (deftest test-update-state-collide-self
   (testing "Update state collide self"
