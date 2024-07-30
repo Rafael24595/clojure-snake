@@ -87,31 +87,42 @@
   (q/text-align :left))
 
 (defn draw-game-new [state]
+  (draw-background)
   (draw-box-with-message state "NEW GAME")
   (draw-score state))
 
 (defn draw-game-run [state]
+  (draw-background)
   (draw-snake state)
   (draw-food state)
   (draw-score state))
 
 (defn draw-game-over [state]
+  (draw-background)
   (draw-box-with-message state "GAME OVER")
   (draw-score state))
 
 (defn draw-game-win [state]
+  (draw-background)
   (draw-box-with-message state "GAME WIN!")
   (draw-score state))
 
-(defn ^:private draw [state]
-  (draw-background)
-  (let [status (:status state)] 
-    (cond 
-      (= status "NEW_GAME") (draw-game-new state)
-      (= status "RUNNING") (draw-game-run state)
-      (= status "GAME_OVER") (draw-game-over state)
-      (= status "WIN_GAME") (draw-game-win state)
-      :else state)))
+(defmulti ^:private  draw :status)
+
+(defmethod ^:private  draw "NEW_GAME" [state]
+  (draw-game-new state))
+
+(defmethod ^:private  draw "RUNNING" [state]
+  (draw-game-run state))
+
+(defmethod ^:private  draw "GAME_OVER" [state]
+  (draw-game-over state))
+
+(defmethod ^:private draw "WIN_GAME" [state]
+  (draw-game-win state))
+
+(defmethod ^:private draw :default [state]
+  state)
 
 (defn ^:private key-pressed-running [state key]
   (let [old-direction (:direction state)
@@ -129,14 +140,22 @@
       (assoc state :direction new-direction)
       (assoc state :direction old-direction))))
 
-(defn ^:private key-pressed [state key] 
-  (let [status (:status state)] 
-    (cond
-      (= status "NEW_GAME") (launch-game state)
-      (= status "RUNNING") (key-pressed-running state key)
-      (= status "GAME_OVER") (launch-game (new-game))
-      (= status "WIN_GAME") (launch-game (new-game))
-      :else state)))
+(defmulti ^:private key-pressed (fn [state _] (:status state)))
+
+(defmethod ^:private key-pressed "NEW_GAME" [state _]
+  (launch-game state))
+
+(defmethod ^:private key-pressed "RUNNING" [state key]
+  (key-pressed-running state key))
+
+(defmethod ^:private key-pressed "GAME_OVER" [_ _]
+  (launch-game (new-game)))
+
+(defmethod ^:private key-pressed "WIN_GAME" [_ _]
+  (launch-game (new-game)))
+
+(defmethod ^:private key-pressed :default [state _]
+  state)
 
 (defn ^:private setup [state]
   (q/frame-rate 10)
